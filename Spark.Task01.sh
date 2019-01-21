@@ -14,7 +14,7 @@ var customersDfca = customersDf.filter(customersDf("customer_state") === "CA")
 customersDfca.write.mode("overwrite").option("compression", "snappy").format("com.databricks.spark.avro").save("/user/cloudera/spark/output/task_01_out")
 
 
-scala> customersDfca.show()
+scala> customersDfca.show() 
 +-----------+---------------+--------------+
 |customer_id|  customer_name|customer_state|
 +-----------+---------------+--------------+

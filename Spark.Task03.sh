@@ -3,6 +3,15 @@
 Expected result: state, total_orders. Sort the results by total_orders in descending order, and by state in ascending.
 Save the result as Hive table called state_orders in default database as datafile delimited by tabs.
 
+# Hive init start
+import org.apache.spark.sql.hive.HiveContext
+import sqlContext.implicits._
+
+val hiveObj = new HiveContext(sc)
+
+hiveObj.sql("use default")
+# Hive init end
+
 var customers = sc.textFile("/user/cloudera/spark/retail_db/customers")
 
 var orders = sc.textFile("/user/cloudera/spark/retail_db/orders")
@@ -23,11 +32,17 @@ var ordersInfo = joinOrdCustState.groupBy($"state").agg(count($"order_id").as("t
 
 ordersInfo.sort($"total_orders".desc, $"state".asc)
 
-ordersInfo.write.partitionBy("state").option("delimiter", "\t").format("parquet").saveAsTable("default.state_orders")
-ordersInfo.write.partitionBy("state").option("delimiter", "\t").format("hive").saveAsTable("default.state_orders")
+ordersInfo.write.format("orc").option("delimiter", "\t").saveAsTable("default.state_orders")
+
+# ordersInfo.write.partitionBy("state").option("delimiter", "\t").format("parquet").saveAsTable("default.state_orders")
+# ordersInfo.write.partitionBy("state").option("delimiter", "\t").format("hive").saveAsTable("default.state_orders")
 
 # scala> ordersInfo.write.mode("overwrite").format("orc").saveAsTable("default.new_res6")
 
+# import org.apache.spark.sql.hive.HiveContext
+# val sqlContext = new HiveContext(sc)
+# sqlContext.sql("use default")
+# resOrdered.write.format("orc").saveAsTable("default.state_orders")
 
 # ordersInfo.write.option("delimiter", "\t").saveAsTable("default.state_orders");
 
